@@ -42,11 +42,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cngonzo/tether.git"
+    "url": "git+https://github.com/stepflo-app/tether.git"
   },
-  "homepage": "https://github.com/cngonzo/tether#readme",
+  "homepage": "https://github.com/stepflo-app/tether#readme",
   "bugs": {
-    "url": "https://github.com/cngonzo/tether/issues"
+    "url": "https://github.com/stepflo-app/tether/issues"
   },
   "devDependencies": {
     "@types/node": "^20.12.0",
