@@ -1,0 +1,62 @@
+{
+  "name": "tether",
+  "version": "0.1.0",
+  "description": "Three primitives for AI features that know when to ask for help.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint 'src/**/*.ts' 'tests/**/*.ts'",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "tsc -p tsconfig.build.json",
+    "prepare": "npm run build",
+    "pack:check": "npm pack --dry-run",
+    "example:draft-followup:typecheck": "npm --prefix examples/draft-followup install && npm --prefix examples/draft-followup run typecheck"
+  },
+  "keywords": [
+    "ai",
+    "human-in-the-loop",
+    "agents",
+    "approval",
+    "slack",
+    "typescript"
+  ],
+  "author": "Chris Gonzalez (@cngonzo)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cngonzo/tether.git"
+  },
+  "homepage": "https://github.com/cngonzo/tether#readme",
+  "bugs": {
+    "url": "https://github.com/cngonzo/tether/issues"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@vitest/coverage-v8": "^1.6.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}
