@@ -11,22 +11,14 @@ export { TetherError } from './errors.js'
 export type { TetherErrorCode } from './errors.js'
 
 // Channels
-export { setChannelAdapter, getChannelAdapter } from './channels/index.js'
+export { setChannelAdapter } from './channels/index.js'
 export type { ChannelAdapter } from './channels/index.js'
 export { createSlackAdapter } from './channels/slack.js'
 export type { SlackChannelAdapter, CreateSlackAdapterOptions } from './channels/slack.js'
 
 // State
-export {
-  setStateAdapter,
-  getStateAdapter,
-  createMemoryAdapter,
-  TERMINAL_RECORD_TTL_MS,
-} from './state/index.js'
+export { setStateAdapter } from './state/index.js'
 export type { StateAdapter, StoredReviewRecord } from './state/index.js'
-
-// Internals occasionally useful for advanced integration / testing
-export { INSTANCE_ID } from './internal/instance.js'
 
 // One-time runtime warning so deployments to multi-replica / serverless
 // surfaces see the limitation in their logs even if they skipped the README.

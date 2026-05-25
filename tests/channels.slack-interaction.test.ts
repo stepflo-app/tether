@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { createHmac } from 'node:crypto'
+import { draft } from '../src/draft.js'
 import { createSlackAdapter } from '../src/channels/slack.js'
+import {
+  _resetChannelAdaptersForTests,
+  setChannelAdapter,
+} from '../src/channels/index.js'
 import {
   _resetPendingReviewsForTests,
   registerPendingReview,
@@ -13,6 +18,7 @@ import { createDeferred } from '../src/types.js'
 import type { DraftResult } from '../src/draft.js'
 
 const SIGNING_SECRET = 'shhh'
+type FetchArgs = Parameters<typeof globalThis.fetch>
 
 function buildInteractionBody(opts: {
   reviewId: string
@@ -68,6 +74,7 @@ async function seedPending(reviewId: string, opts?: { ownerInstanceId?: string }
 
 describe('Slack handleInteraction', () => {
   beforeEach(() => {
+    _resetChannelAdaptersForTests()
     _resetPendingReviewsForTests()
     setStateAdapter(null)
   })
@@ -290,5 +297,118 @@ describe('Slack handleInteraction', () => {
       },
     })
     await promise
+  })
+
+  it('treats duplicate approve deliveries as idempotent', async () => {
+    const fetchMock = vi.fn<FetchArgs, Promise<Response>>(async () => {
+      return new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      })
+    })
+    const adapter = createSlackAdapter({
+      botToken: 'xoxb',
+      signingSecret: SIGNING_SECRET,
+      fetch: fetchMock as typeof fetch,
+    })
+    setChannelAdapter('slack', adapter)
+
+    const promise = draft({
+      context: {},
+      produce: async () => ({ ok: true }),
+      review: {
+        channel: 'slack',
+        destination: 'C123',
+        timeout: '1h',
+        onTimeout: 'reject',
+      },
+    })
+
+    await Promise.resolve()
+    await Promise.resolve()
+    await Promise.resolve()
+
+    const request = fetchMock.mock.calls[0]
+    expect(request).toBeDefined()
+    const [, init] = request!
+    const body = JSON.parse(String(init?.body))
+    const reviewId = body.blocks[1].elements[0].value as string
+    const rawBody = buildInteractionBody({
+      reviewId,
+      actionId: 'tether_approve',
+    })
+    const ts = String(Math.floor(Date.now() / 1000))
+    const headers = {
+      'x-slack-signature': sign(rawBody, ts),
+      'x-slack-request-timestamp': ts,
+    }
+
+    const first = await adapter.handleInteraction({ rawBody, headers })
+    const second = await adapter.handleInteraction({ rawBody, headers })
+
+    expect(first).toEqual({ status: 200, body: 'Approved.' })
+    expect(second.status).toBe(200)
+    expect(second.body).toMatch(/already resolved or expired/i)
+    await expect(promise).resolves.toMatchObject({ status: 'approved' })
+  })
+
+  it('rejects a late click after draft() has timed out', async () => {
+    vi.useFakeTimers()
+    try {
+      const fetchMock = vi.fn<FetchArgs, Promise<Response>>(async () => {
+        return new Response(JSON.stringify({ ok: true }), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        })
+      })
+      const adapter = createSlackAdapter({
+        botToken: 'xoxb',
+        signingSecret: SIGNING_SECRET,
+        fetch: fetchMock as typeof fetch,
+      })
+      setChannelAdapter('slack', adapter)
+
+      const promise = draft({
+        context: {},
+        produce: async () => ({ ok: true }),
+        review: {
+          channel: 'slack',
+          destination: 'C123',
+          timeout: '50ms',
+          onTimeout: 'reject',
+        },
+      })
+
+      await vi.advanceTimersByTimeAsync(0)
+      const request = fetchMock.mock.calls[0]
+      expect(request).toBeDefined()
+      const [, init] = request!
+      const body = JSON.parse(String(init?.body))
+      const reviewId = body.blocks[1].elements[0].value as string
+
+      await vi.advanceTimersByTimeAsync(50)
+      await expect(promise).resolves.toMatchObject({
+        status: 'rejected',
+        reason: 'timeout',
+      })
+
+      const rawBody = buildInteractionBody({
+        reviewId,
+        actionId: 'tether_approve',
+      })
+      const ts = String(Math.floor(Date.now() / 1000))
+      const response = await adapter.handleInteraction({
+        rawBody,
+        headers: {
+          'x-slack-signature': sign(rawBody, ts),
+          'x-slack-request-timestamp': ts,
+        },
+      })
+
+      expect(response.status).toBe(200)
+      expect(response.body).toMatch(/resolved or expired|expired/i)
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })

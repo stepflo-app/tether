@@ -6,6 +6,7 @@ import { renderPreview } from './internal/preview.js'
 import {
   getPendingReview,
   registerPendingReview,
+  resolvePendingReview,
   removePendingReview,
 } from './runtime/pending-reviews.js'
 import { getStateAdapter, TERMINAL_RECORD_TTL_MS } from './state/index.js'
@@ -92,7 +93,7 @@ export async function draft<TContext, TArtifact>(
   const deferred = createDeferred<DraftResult<TArtifact>>()
 
   const timer = setTimeout(() => {
-    deferred.resolve({
+    resolvePendingReview(reviewId, {
       status: 'rejected',
       reason: 'timeout',
       reviewId,
@@ -146,6 +147,14 @@ export async function draft<TContext, TArtifact>(
       `No channel adapter is registered for channel ${JSON.stringify(config.review.channel)}. ` +
         `Call setChannelAdapter('${config.review.channel}', createSlackAdapter(...)) before calling draft().`,
     )
+  }
+
+  // If the review already timed out while persistence or adapter lookup was in
+  // flight, do not post a stale Slack message after the deadline.
+  if (!getPendingReview(reviewId)) {
+    const outcome = await deferred.promise
+    await persistTerminalRecord(state, pendingRecord, outcome, Date.now())
+    return outcome
   }
 
   try {
@@ -289,6 +298,3 @@ async function persistTerminalRecord(
     console.error('[tether] persistTerminalRecord failed; not escalating:', err)
   }
 }
-
-// Re-export for tests / advanced consumers that want introspection.
-export { getPendingReview }

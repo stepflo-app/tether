@@ -27,6 +27,28 @@ export function getPendingReview(reviewId: string): PendingReview<unknown> | und
   return registry.get(reviewId)
 }
 
+/**
+ * Resolve and remove a pending review atomically from the local registry.
+ *
+ * This is the only safe way for timers and channel helpers to settle a review:
+ * it prevents duplicate Slack deliveries (or timeout-vs-click races) from
+ * claiming success more than once.
+ */
+export function resolvePendingReview<TArtifact>(
+  reviewId: string,
+  outcome: DraftResult<TArtifact>,
+): boolean {
+  const existing = registry.get(reviewId) as PendingReview<TArtifact> | undefined
+  if (!existing) {
+    return false
+  }
+
+  clearTimeout(existing.timer)
+  registry.delete(reviewId)
+  existing.deferred.resolve(outcome)
+  return true
+}
+
 export function removePendingReview(reviewId: string): void {
   const existing = registry.get(reviewId)
   if (existing) {

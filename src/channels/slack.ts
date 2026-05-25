@@ -4,9 +4,9 @@ import { INSTANCE_ID } from '../internal/instance.js'
 import { truncate } from '../internal/preview.js'
 import {
   getPendingReview,
-  removePendingReview,
+  resolvePendingReview,
 } from '../runtime/pending-reviews.js'
-import { getStateAdapter, TERMINAL_RECORD_TTL_MS } from '../state/index.js'
+import { getStateAdapter } from '../state/index.js'
 import type { StoredReviewRecord } from '../state/types.js'
 import type { ChannelAdapter } from './types.js'
 
@@ -200,7 +200,7 @@ export function createSlackAdapter(opts: CreateSlackAdapterOptions): SlackChanne
       return { status: 200, body: 'This review is already resolved or expired.' }
     }
 
-    if (Date.now() > record.expiresAt) {
+    if (Date.now() >= record.expiresAt) {
       return { status: 200, body: 'This review has expired.' }
     }
 
@@ -232,27 +232,29 @@ export function createSlackAdapter(opts: CreateSlackAdapterOptions): SlackChanne
     if (parsed.action === 'approve') {
       // Resolve the deferred with approved; the awaiting draft() call will
       // run onApprove and decide between approved / approval_failed.
-      pending.deferred.resolve({
+      const resolved = resolvePendingReview(parsed.reviewId, {
         status: 'approved',
         artifact: pending.artifact,
         reviewId: parsed.reviewId,
       })
+      if (!resolved) {
+        return { status: 200, body: 'This review is already resolved or expired.' }
+      }
       return { status: 200, body: 'Approved.' }
     }
 
     // Explicit reject path.
-    pending.deferred.resolve({
+    const resolved = resolvePendingReview(parsed.reviewId, {
       status: 'rejected',
       reason: 'explicit',
       reviewId: parsed.reviewId,
       detail: parsed.userId ? `Rejected by Slack user ${parsed.userId}` : undefined,
     })
+    if (!resolved) {
+      return { status: 200, body: 'This review is already resolved or expired.' }
+    }
     return { status: 200, body: 'Rejected.' }
   }
-
-  // Mark unused vars referenced for type guards.
-  void removePendingReview
-  void TERMINAL_RECORD_TTL_MS
 
   return {
     postReview,
