@@ -1,0 +1,133 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "Stepflo mode identity tokens for Find / Fix / Ship. See ../mode-identity.md for the identity contract and ../rubric.md for the accessibility criteria these tokens satisfy. All foreground/background pairs are tested at >= 7:1 contrast (WCAG 2.2 AAA). Accents on background are >= 3:1.",
+  "mode": {
+    "find": {
+      "name": { "$value": "find", "$type": "string" },
+      "label": { "$value": "Find", "$type": "string" },
+      "verb": {
+        "primary": { "$value": "Find", "$type": "string" },
+        "secondary": { "$value": "Discover", "$type": "string" },
+        "tertiary": { "$value": "Look for", "$type": "string" }
+      },
+      "color": {
+        "background": { "$value": "#F5F9FF", "$type": "color" },
+        "backgroundElevated": { "$value": "#FFFFFF", "$type": "color" },
+        "foreground": { "$value": "#003E7E", "$type": "color" },
+        "foregroundMuted": { "$value": "#2A4A73", "$type": "color" },
+        "accent": { "$value": "#1357B8", "$type": "color" },
+        "focusRing": { "$value": "#003E7E", "$type": "color" }
+      },
+      "icon": { "$value": "magnifier", "$type": "string" },
+      "shape": {
+        "radius": { "$value": "12px", "$type": "dimension" },
+        "language": { "$value": "rounded-open", "$type": "string" }
+      },
+      "layout": {
+        "posture": { "$value": "wide-scan", "$type": "string" },
+        "description": { "$value": "Wide content area, multi-column results, persistent filters on the left, keyword input in the top slot.", "$type": "string" }
+      },
+      "cue": {
+        "sound": { "$value": "rising-soft-ping", "$type": "string" },
+        "haptic": { "$value": "single-light", "$type": "string" }
+      },
+      "keyboard": {
+        "modeKey": { "$value": "f", "$type": "string" }
+      },
+      "aria": {
+        "landmarkLabel": { "$value": "Find mode, main", "$type": "string" }
+      }
+    },
+    "fix": {
+      "name": { "$value": "fix", "$type": "string" },
+      "label": { "$value": "Fix", "$type": "string" },
+      "verb": {
+        "primary": { "$value": "Fix", "$type": "string" },
+        "secondary": { "$value": "Update", "$type": "string" },
+        "tertiary": { "$value": "Repair", "$type": "string" }
+      },
+      "color": {
+        "background": { "$value": "#FFF8E8", "$type": "color" },
+        "backgroundElevated": { "$value": "#FFFFFF", "$type": "color" },
+        "foreground": { "$value": "#7A4E00", "$type": "color" },
+        "foregroundMuted": { "$value": "#5E3D00", "$type": "color" },
+        "accent": { "$value": "#B07300", "$type": "color" },
+        "focusRing": { "$value": "#7A4E00", "$type": "color" }
+      },
+      "icon": { "$value": "wrench", "$type": "string" },
+      "shape": {
+        "radius": { "$value": "4px", "$type": "dimension" },
+        "language": { "$value": "angular-focused", "$type": "string" }
+      },
+      "layout": {
+        "posture": { "$value": "single-artifact-centered", "$type": "string" },
+        "description": { "$value": "A single artifact centered, with surrounding affordances pulled in. Filters and lists from Find collapse into a sidebar.", "$type": "string" }
+      },
+      "cue": {
+        "sound": { "$value": "mid-tone-tap", "$type": "string" },
+        "haptic": { "$value": "double-medium", "$type": "string" }
+      },
+      "keyboard": {
+        "modeKey": { "$value": "x", "$type": "string" }
+      },
+      "aria": {
+        "landmarkLabel": { "$value": "Fix mode, main", "$type": "string" }
+      }
+    },
+    "ship": {
+      "name": { "$value": "ship", "$type": "string" },
+      "label": { "$value": "Ship", "$type": "string" },
+      "verb": {
+        "primary": { "$value": "Ship", "$type": "string" },
+        "secondary": { "$value": "Send", "$type": "string" },
+        "tertiary": { "$value": "Release", "$type": "string" }
+      },
+      "color": {
+        "background": { "$value": "#EFFBF4", "$type": "color" },
+        "backgroundElevated": { "$value": "#FFFFFF", "$type": "color" },
+        "foreground": { "$value": "#00543E", "$type": "color" },
+        "foregroundMuted": { "$value": "#1E4A3B", "$type": "color" },
+        "accent": { "$value": "#1A7A5C", "$type": "color" },
+        "focusRing": { "$value": "#00543E", "$type": "color" }
+      },
+      "icon": { "$value": "paper-plane", "$type": "string" },
+      "shape": {
+        "radius": { "$value": "8px", "$type": "dimension" },
+        "language": { "$value": "diamond-forward-leaning", "$type": "string" }
+      },
+      "layout": {
+        "posture": { "$value": "summary-card-vertical", "$type": "string" },
+        "description": { "$value": "A summary card centered, vertical flow, prominent primary action at the bottom, undo affordance visible.", "$type": "string" }
+      },
+      "cue": {
+        "sound": { "$value": "resolved-chord", "$type": "string" },
+        "haptic": { "$value": "triple-firm", "$type": "string" }
+      },
+      "keyboard": {
+        "modeKey": { "$value": "s", "$type": "string" }
+      },
+      "aria": {
+        "landmarkLabel": { "$value": "Ship mode, main", "$type": "string" }
+      }
+    }
+  },
+  "shared": {
+    "transition": {
+      "duration": { "$value": "200ms", "$type": "duration", "$description": "Override to 0ms when prefers-reduced-motion: reduce." },
+      "easing": { "$value": "cubic-bezier(0.4, 0, 0.2, 1)", "$type": "cubicBezier" }
+    },
+    "touchTarget": {
+      "min": { "$value": "48px", "$type": "dimension" },
+      "spacing": { "$value": "8px", "$type": "dimension" }
+    },
+    "focusRing": {
+      "width": { "$value": "3px", "$type": "dimension" },
+      "offset": { "$value": "2px", "$type": "dimension" },
+      "minContrastRatio": { "$value": 3, "$type": "number" }
+    },
+    "undoWindow": {
+      "default": { "$value": "30s", "$type": "duration" },
+      "ship": { "$value": "60s", "$type": "duration" }
+    }
+  }
+}

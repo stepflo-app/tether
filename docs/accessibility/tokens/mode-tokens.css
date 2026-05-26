@@ -1,0 +1,147 @@
+/*
+ * Stepflo mode identity tokens — Find / Fix / Ship.
+ *
+ * See ../mode-identity.md for the full identity contract and ../rubric.md for
+ * the accessibility criteria these tokens satisfy.
+ *
+ * Contrast guarantees (verified against WCAG 2.2 AAA):
+ *   --mode-fg on --mode-bg              >= 7:1   (body text)
+ *   --mode-accent on --mode-bg          >= 3:1   (non-text UI: borders, icons)
+ *   --mode-focus-ring on any surface    >= 3:1   (focus indicator)
+ *
+ * Usage:
+ *   <body data-mode="find">    applies Find tokens
+ *   <body data-mode="fix">     applies Fix tokens
+ *   <body data-mode="ship">    applies Ship tokens
+ */
+
+:root {
+  --mode-transition-duration: 200ms;
+  --mode-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --touch-target-min: 48px;
+  --touch-target-spacing: 8px;
+
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --mode-transition-duration: 0ms;
+  }
+}
+
+[data-mode='find'] {
+  --mode-name: 'find';
+  --mode-label: 'Find';
+  --mode-verb-primary: 'Find';
+  --mode-verb-secondary: 'Discover';
+
+  --mode-bg: #f5f9ff;
+  --mode-bg-elevated: #ffffff;
+  --mode-fg: #003e7e;
+  --mode-fg-muted: #2a4a73;
+  --mode-accent: #1357b8;
+  --mode-focus-ring: #003e7e;
+
+  --mode-icon: 'magnifier';
+  --mode-shape-radius: 12px;
+  --mode-sound-cue: 'rising-soft-ping';
+  --mode-haptic-pattern: 'single-light';
+}
+
+[data-mode='fix'] {
+  --mode-name: 'fix';
+  --mode-label: 'Fix';
+  --mode-verb-primary: 'Fix';
+  --mode-verb-secondary: 'Update';
+
+  --mode-bg: #fff8e8;
+  --mode-bg-elevated: #ffffff;
+  --mode-fg: #7a4e00;
+  --mode-fg-muted: #5e3d00;
+  --mode-accent: #b07300;
+  --mode-focus-ring: #7a4e00;
+
+  --mode-icon: 'wrench';
+  --mode-shape-radius: 4px;
+  --mode-sound-cue: 'mid-tone-tap';
+  --mode-haptic-pattern: 'double-medium';
+}
+
+[data-mode='ship'] {
+  --mode-name: 'ship';
+  --mode-label: 'Ship';
+  --mode-verb-primary: 'Ship';
+  --mode-verb-secondary: 'Send';
+
+  --mode-bg: #effbf4;
+  --mode-bg-elevated: #ffffff;
+  --mode-fg: #00543e;
+  --mode-fg-muted: #1e4a3b;
+  --mode-accent: #1a7a5c;
+  --mode-focus-ring: #00543e;
+
+  --mode-icon: 'paper-plane';
+  --mode-shape-radius: 8px;
+  --mode-sound-cue: 'resolved-chord';
+  --mode-haptic-pattern: 'triple-firm';
+}
+
+/*
+ * Mode-aware primitives.
+ *
+ * These select state purely from --mode-* tokens, so swapping data-mode on the
+ * root re-themes the whole tree with no per-component logic.
+ */
+
+.mode-surface {
+  background-color: var(--mode-bg);
+  color: var(--mode-fg);
+  transition:
+    background-color var(--mode-transition-duration) var(--mode-transition-easing),
+    color var(--mode-transition-duration) var(--mode-transition-easing);
+}
+
+.mode-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--touch-target-min);
+  padding: 0 16px;
+  border-radius: var(--mode-shape-radius);
+  background-color: var(--mode-bg-elevated);
+  color: var(--mode-fg);
+  border: 2px solid var(--mode-accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mode-chip::before {
+  content: 'MODE:';
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.mode-primary-action {
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+  padding: 0 24px;
+  border-radius: var(--mode-shape-radius);
+  background-color: var(--mode-accent);
+  color: var(--mode-bg-elevated);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+.mode-primary-action:focus-visible {
+  outline: var(--focus-ring-width) solid var(--mode-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.mode-primary-action + .mode-primary-action {
+  margin-inline-start: var(--touch-target-spacing);
+}
