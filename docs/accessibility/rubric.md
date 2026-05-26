@@ -15,6 +15,27 @@ We design for everyone, including users with cognitive, motor, visual, auditory,
 and neurodivergent differences. The rubric below operationalizes that
 commitment so it survives deadline pressure.
 
+## Precedence: accessibility outranks brand and design
+
+When this rubric and an existing Stepflo design reference disagree,
+**accessibility wins**. This is the explicit, non-negotiable precedence:
+
+1. **Accessibility rubric** (this document) — the bar.
+2. **Mode identity contract** ([`mode-identity.md`](./mode-identity.md)) — how
+   Find / Fix / Ship stay distinct under that bar.
+3. **Stepflo design references** (palette, type, iconography, motion, voice) —
+   the aesthetic execution within the bar.
+
+Concretely: if a brand color does not hit 7:1 against its background, the
+brand color changes — not the contrast target. If a beloved icon is not
+distinguishable in grayscale at 16px, the icon changes — not the
+"never color-alone" rule. If a marketing animation cannot respect
+`prefers-reduced-motion`, the animation changes — not the motion rule.
+
+This precedence is the whole reason the rubric exists. Without it, every
+criterion below collapses the first time a stakeholder pushes back on
+aesthetic grounds.
+
 ## The twelve criteria
 
 Each criterion is binary (pass / fail) and verified on every release. A surface
